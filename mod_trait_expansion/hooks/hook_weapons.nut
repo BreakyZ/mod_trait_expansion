@@ -1,17 +1,5 @@
-::ModTraitExpansion.HooksMod.hook("scripts/items/weapons/weapon", function ( q ) {
-	q.m.OrcWeapon <- false;
-	q.m.GoblinWeapon <- false;
-
-	q.isOrcWeapon <- function()
-	{
-		this.m.OrcWeapon;
-	}
-
-	q.isGoblinWeapon <- function()
-	{
-		this.m.GoblinWeapon;
-	}
-});
+::Const.Items.addNewWeaponType("Goblin");
+::Const.Items.addNewWeaponType("Orc");
 
 local gobboWeapons = 
 [
@@ -36,7 +24,15 @@ local gobboWeapons =
 ];
 if (Is_SSU_Exist)
 {
-	gobboWeapons.extend(["greenskins/cr_goblin_axe"]);
+	orcWeapons.extend([
+		"greenskins/cr_orc_mace",
+		"greenskins/cr_orc_spear",
+		"greenskins/cr_orc_staff",
+		"named/cr_named_orc_axe_infantry"
+		"named/cr_named_orc_cleaver_2h",
+		"named/cr_named_orc_hammer_2h",
+		"named/cr_named_orc_mace_2h",
+		"named/cr_named_orc_sword_2h"]);
 }
 foreach (weapon in gobboWeapons)
 {
@@ -47,7 +43,7 @@ foreach (weapon in gobboWeapons)
 		}
 	});
 }
-local orcWeapons = 
+local gobboWeapons = 
 [
 	"greenskins/goblin_bow",
 	"greenskins/goblin_crossbow",
@@ -70,16 +66,7 @@ local orcWeapons =
 ];
 if (Is_SSU_Exist)
 {
-	orcWeapons.extend([
-		"greenskins/cr_orc_mace",
-		"greenskins/cr_orc_spear",
-		"greenskins/cr_orc_spear",
-		"greenskins/cr_orc_staff",
-		"named/cr_named_orc_axe_infantry"
-		"named/cr_named_orc_cleaver_2h",
-		"named/cr_named_orc_hammer_2h",
-		"named/cr_named_orc_mace_2h",
-		"named/cr_named_orc_sword_2h"]);
+	gobboWeapons.extend(["greenskins/cr_goblin_axe"]);
 }
 foreach (weapon in orcWeapons)
 {

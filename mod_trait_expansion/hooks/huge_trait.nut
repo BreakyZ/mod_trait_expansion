@@ -1,83 +1,56 @@
-::ModTraitExpansion.HooksMod.hook("scripts/skills/traits/huge_trait", function ( q ) {
-	q.create = @( __original) function ()
-	{
-		this.m.Description = "Being particularly huge and burly, this character\'s strikes hurt plenty, but they\'re also a bigger target than most. Certain weapons barely fit in their beefy hands.";
-	}
+::ModTraitExpansion.HooksMod.hook("scripts/skills/traits/huge_trait", function( q ) {
 
-	q.getTooltip = @(__original) function ()
+	q.getTooltip = @(__original) function()
 	{
-		local ret = __original();
-		ret.extend(
-		[
-			{
+		local tooltip = __original();
+		if (this.getContainer().getActor().getSkills().hasSkill("trait.strong"))
+		{
+			tooltip.push({
 				id = 11,
 				type = "text",
-				icon = "ui/icons/melee_skill.png",
-				text = "Orc weapons confer no penalties."
-			},
-			{
-				id = 12,
+				icon = "ui/icons/special.png",
+				text = "Weapons with extra Fatigue build-up on skills have no penalty for this character"
+			});
+		}
+		else
+		{
+			tooltip.push({
+				id = 11,
 				type = "text",
-				icon = "ui/icons/melee_skill.png",
-				text = "This character is too big and cannot use goblin weapons and [color=#731f39]Double Grip[/color] one handed weapons."
-			},
-			{
-				id = 13,
-				type = "text",
-				icon = "ui/icons/regular_damage.png",
-				text = "Receives an additional [color=" + this.Const.UI.Color.PositiveValue + "]10%[/color] Melee Damage when wielding "
-			}
-		]);
-
-		return ret;
+				icon = "ui/icons/special.png",
+				text = "Weapons with extra Fatigue build-up on skills have this penalty reduced by [color=" + ::Const.UI.Color.PositiveValue + "]-3[/color]"
+			});
+		}
+		
+		return tooltip;
 	}
 
-	q.onAdded <- function()
+	q.onUpdate = @(__original) function ( _properties )
 	{
-		local items = this.getContainer().getActor().getItems();
+		__original( _properties );
 
-		if (items.getItemAtSlot(this.Const.ItemSlot.Mainhand) && items.getItemAtSlot(this.Const.ItemSlot.Mainhand).isGoblinWeapon)
+		if (this.getContainer().getActor().getSkills().hasSkill("trait.strong"))
+			_properties.IsProficientWithHeavyWeapons = true;
+	}
+
+	if (!(::Is_PTR_Exist))
+	{
+		q.onRemoved <- function()
 		{
-			local item = items.getItemAtSlot(this.Const.ItemSlot.Mainhand);
-			//item.unequip();
-			item.drop();
+			this.getContainer().getActor().getCurrentProperties().IsProficientWithHeavyWeapons = false;
 		}
 
-		items.getData()[this.Const.ItemSlot.Offhand][0] = -1;
-	}
-
-	q.onAfterUpdate = @(__original) function( _properties )
-	{
-		local weapon = this.getContainer().getActor().getMainhandItem();
-		if (weapon != null || !weapon.isOrcWeapon)
+		q.onAfterUpdate <- function ( _properties )
 		{
-			local skills = weapon.getSkills();
-			if (skills.len() == 0)
-			{
-				this.m.Skills.clear();
+			if (_properties.IsProficientWithHeavyWeapons)
 				return;
-			}
-			if (weapon.m.FatigueOnSkillUse > 0)
-			{
-				foreach (skill in skills)
-				{
-					if (this.m.Skills.find(skill.getID()) == null)
-					{
-						this.m.Skills.push(skill.getID());
-						skill.m.FatigueCost -= ::Math.min(5, weapon.m.FatigueOnSkillUse);
-					}
-				}
-			}
+
+			local weapon = this.getContainer().getActor().getMainhandItem();
+
+			if (weapon != null && weapon.m.FatigueOnSkillUse > 0)
+				foreach (skill in weapon.getSkills())
+					skill.m.FatigueCost -= ::Math.min(3, weapon.m.FatigueOnSkillUse);
 		}
 	}
 
-	q.onRemoved = @(__original) function()
-	{
-		local equippedItem = this.getContainer().getActor().getItems().getItemAtSlot(::Const.ItemSlot.Mainhand);
-		if (equippedItem != null)
-		{
-			this.getContainer().getActor().getItems().unequip(equippedItem);
-			this.getContainer().getActor().getItems().equip(equippedItem);
-		}
-	}
 });

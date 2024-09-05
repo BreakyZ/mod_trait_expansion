@@ -1,7 +1,7 @@
-::ModTraitExpansion.HooksMod.hook("scripts/skills/traits/huge_trait", function ( q ) {
+::ModTraitExpansion.HooksMod.hook("scripts/skills/traits/frail_trait", function ( q ) {
 	q.create = @( __original) function ()
 	{
-		this.m.Description = "Being particularly huge and burly, this character\'s strikes hurt plenty, but they\'re also a bigger target than most. Certain weapons barely fit in their beefy hands.";
+		this.m.Description = "Weak and loose. Has to work hard to become a real warrior. Will receive injuries more often.";
 	}
 
 	q.getTooltip = @(__original) function ()
@@ -11,7 +11,7 @@
 				id = 11,
 				type = "text",
 				icon = "ui/icons/warning.png",
-				text = "The threshold to sustain injuries on getting hit is decreased by [color=" + this.Const.UI.Color.Negative + "]25%[/color]"
+				text = "The threshold to sustain injuries on getting hit is decreased by [color=" + this.Const.UI.Color.NegativeValue + "]25%[/color]"
 			});
 
 		return ret;
